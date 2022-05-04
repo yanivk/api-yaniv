@@ -1,10 +1,10 @@
 import mysql, {queryCallback} from 'mysql'
 
 type DB = {
-    host: string,
-    user: string,
-    password: string,
-    database: string
+    host: string | undefined,
+    user: string | undefined,
+    password: string | undefined,
+    database: string | undefined
 }
 
 export default class DataBase {

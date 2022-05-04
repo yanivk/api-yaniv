@@ -22,6 +22,10 @@ export default class ModelsClass implements DatabaseInterface {
 
     async findAll(page = 1, params?: queryCallback): Promise<Query> {
         const offset = helper.getOffset(page, config.listPerPage);
-        return await this._db.query('SELECT * FROM ' + this.table + ' LIMIT ?, ?',[ offset, config.listPerPage], params)
+        return await this._db.query('SELECT * FROM ' + this.table + ' LIMIT ?, ?',[offset, config.listPerPage], params);
+    }
+
+    async remove(id: number, params?: queryCallback): Promise<Query> {
+        return await this._db.query('DELETE FROM ' + this.table + ' WHERE id = ?', [id], params)
     }
 }

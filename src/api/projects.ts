@@ -31,30 +31,33 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
 /**
  * Routes to projects
  */
-router.get('/', authenticateToken, async function (req, res, next) {
+router.get('/', async function (req, res, next) {
     await project.findAll(1, (err: MysqlError | null, result: Object) => {
-        if (err) throw err?.sqlMessage;
+        if (err) throw res.json(err?.sqlMessage);
         res.send(result)
-    }).then(r => console.log(r));
+    })
 })
 router.post('/add', authenticateToken, async function (req, res, next) {
     const body = req.body
     if (body.name && body.description && body.image) {
         await project.create(body, (err: MysqlError | null, result: Object) => {
-            if (err) throw res.json(err);
+            if (err) throw res.json(err?.sqlMessage);
             res.status(200)
             res.send(result)
         });
     }
 })
-router.get('/:id', authenticateToken, function (req, res,next){
-    project.find(parseInt(req.params.id), 1, (err: MysqlError | null, result: Object) => {
-        if (err) throw err;
-        return res.send(result)
-    }).then(r => console.log(r));
+router.get('/:id', async function (req, res,next){
+    await project.find(parseInt(req.params.id), 1, (err: MysqlError | null, result: Object) => {
+        if (err) throw res.json(err?.sqlMessage);
+        res.send(result)
+    })
 })
-router.delete('/:id', authenticateToken, function (req, res,next){
-    res.json('DELETE book')
+router.delete('/:id', authenticateToken, async function (req, res,next){
+    await project.remove(parseInt(req.params.id), (err: MysqlError | null, result: Object) => {
+        if (err) throw res.json(err?.sqlMessage);
+        res.send(result)
+    })
 })
 
 
