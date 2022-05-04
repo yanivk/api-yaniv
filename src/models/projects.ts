@@ -8,8 +8,8 @@ export default class Projects extends ModelsClass {
         super(table)
     }
 
-    async create(project: ProjectsInterface, param?: queryCallback) {
-        return await this._db.query(
+    create(project: ProjectsInterface, param?: queryCallback) {
+        return this._db.query(
             'INSERT INTO project (name, description, created_at, image) VALUES (?,?,?,?)',
             [project.name, project.description, helper.formatDate(new Date()), project.image],
             param);

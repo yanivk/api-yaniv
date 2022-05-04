@@ -1,9 +1,7 @@
 import {DatabaseInterface} from "../interfaces/class/databaseInterface";
 import {Query, queryCallback} from "mysql";
-import DataBase from "../services/db";
-
+import DataBase from "../services/DataBase";
 import config from '../config';
-import Database from "../services/db";
 import helper from "../services/helpers";
 
 export default class ModelsClass implements DatabaseInterface {
@@ -11,21 +9,21 @@ export default class ModelsClass implements DatabaseInterface {
     protected table: string;
 
     constructor(table: string) {
-        this._db = new Database(config.db);
+        this._db = new DataBase(config.db);
         this.table = table
     }
 
-    async find(id: number, page = 1, params?: queryCallback): Promise<Query> {
+    find(id: number, page = 1, params?: queryCallback): Promise<Query> {
         const offset = helper.getOffset(page, config.listPerPage);
-        return await this._db.query('SELECT * FROM ' + this.table + ' WHERE id = ? LIMIT ?,  ?',[id, offset, config.listPerPage], params);
+        return this._db.query('SELECT * FROM ' + this.table + ' WHERE id = ? LIMIT ?,  ?',[id, offset, config.listPerPage], params);
     }
 
-    async findAll(page = 1, params?: queryCallback): Promise<Query> {
+    findAll(page = 1, params?: queryCallback): Promise<Query> {
         const offset = helper.getOffset(page, config.listPerPage);
-        return await this._db.query('SELECT * FROM ' + this.table + ' LIMIT ?, ?',[offset, config.listPerPage], params);
+        return this._db.query('SELECT * FROM ' + this.table + ' LIMIT ?, ?',[offset, config.listPerPage], params);
     }
 
-    async remove(id: number, params?: queryCallback): Promise<Query> {
-        return await this._db.query('DELETE FROM ' + this.table + ' WHERE id = ?', [id], params)
+    remove(id: number, params?: queryCallback): Promise<Query> {
+        return this._db.query('DELETE FROM ' + this.table + ' WHERE id = ?', [id], params)
     }
 }

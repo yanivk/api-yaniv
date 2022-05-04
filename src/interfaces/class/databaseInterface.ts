@@ -1,4 +1,4 @@
-import Database from "../../services/db";
+import Database from "../../services/DataBase";
 import {Query} from "mysql";
 
 export interface DatabaseInterface {

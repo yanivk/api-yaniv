@@ -35,7 +35,6 @@ router.get('/login', async function (req: Request, res: Response) {
 
             if (validPassword) {
                 let newToken = generateAccessToken({mail: rows[0].mail}, {password: rows[0].password});
-                //await userFound.setToken(rows[0].id, newToken);
                 await res.status(200).json({message: "Valid password", token: newToken});
             } else {
                 await res.status(400).json({error: "Invalid Password"});

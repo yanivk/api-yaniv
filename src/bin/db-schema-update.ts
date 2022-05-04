@@ -1,4 +1,4 @@
-import DataBase from "../services/db";
+import DataBase from "../services/DataBase";
 import config from "../config";
 import * as fs from "fs";
 import * as path from "path";

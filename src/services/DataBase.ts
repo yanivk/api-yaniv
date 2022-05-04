@@ -1,6 +1,6 @@
 import mysql, {queryCallback} from 'mysql'
 
-type DB = {
+type DataBase = {
     host: string | undefined,
     user: string | undefined,
     password: string | undefined,
@@ -8,9 +8,9 @@ type DB = {
 }
 
 export default class DataBase {
-    private readonly _configuration: DB;
+    private readonly _configuration: DataBase;
 
-    constructor(configuration: DB) {
+    constructor(configuration: DataBase) {
         this._configuration = configuration;
     }
 

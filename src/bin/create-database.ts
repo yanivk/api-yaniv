@@ -1,4 +1,4 @@
-import DataBase from "../services/db";
+import DataBase from "../services/DataBase";
 import config from "../config";
 
 class CreateDatabase {
