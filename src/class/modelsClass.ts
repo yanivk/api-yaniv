@@ -1,5 +1,5 @@
 import {DatabaseInterface} from "../interfaces/class/databaseInterface";
-import {Query} from "mysql";
+import {Query, queryCallback} from "mysql";
 import DataBase from "../services/db";
 
 import config from '../config';
@@ -15,18 +15,13 @@ export default class ModelsClass implements DatabaseInterface {
         this.table = table
     }
 
-    async find(id: number, page = 1, params?: Function): Promise<Query> {
+    async find(id: number, page = 1, params?: queryCallback): Promise<Query> {
         const offset = helper.getOffset(page, config.listPerPage);
-        return await this._db.query(`SELECT name
-                                FROM ${this.table} 
-                                WHERE id = ${id}  
-                                LIMIT ${offset}, ${config.listPerPage}`, params);
+        return await this._db.query('SELECT * FROM ' + this.table + ' WHERE id = ? LIMIT ?,  ?',[id, offset, config.listPerPage], params);
     }
 
-    async findAll(page = 1, params?: Function): Promise<Query> {
+    async findAll(page = 1, params?: queryCallback): Promise<Query> {
         const offset = helper.getOffset(page, config.listPerPage);
-        return await this._db.query(`SELECT ${this.table}
-                                     FROM project LIMIT ${offset}, ${config.listPerPage}`, params)
+        return await this._db.query('SELECT * FROM ' + this.table + ' LIMIT ?, ?',[ offset, config.listPerPage], params)
     }
-
 }

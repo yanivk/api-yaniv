@@ -5,7 +5,7 @@ import jwt, {Secret} from 'jsonwebtoken';
 import * as dotenv from 'dotenv'
 import bcrypt from "bcrypt";
 import { UsersInterface } from "../interfaces/models/usersInterface";
-import {Query} from "mysql";
+import {MysqlError, Query} from "mysql";
 
 const router = express.Router();
 dotenv.config();
@@ -27,7 +27,7 @@ const user = new Users()
 
 router.get('/login', async function (req: Request, res: Response) {
     const body = req.body;
-    const userFound: Query = await user.findByMail(body.mail, async function (err: string, rows: [UsersInterface]) {
+    const userFound: Query = await user.findByMail(body.mail, async (err: MysqlError | null, rows: [UsersInterface]) => {
         if (err) throw await res.send(err);
         console.log(userFound)
         if (rows.length > 0) {
@@ -53,8 +53,8 @@ router.post('/signup', async function (req, res) {
         body.token = generateAccessToken({mail: body.mail}, {password: body.password});
         const salt = await bcrypt.genSalt(10);
         body.password = await bcrypt.hash(body.password, salt);
-        await user.create(body, function (err: string, result: object) {
-            if (err) throw res.json(err);
+        await user.create(body, (err: MysqlError | null, result: Object) =>  {
+            if (err) throw err?.sqlMessage;
             res.status(200)
             res.send(result)
         });

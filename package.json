@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon dist/app.js\"",
+    "create-db": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc\" \"node dist/bin/create-database.js\"",
+    "update-schema-db": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc\" \"node dist/bin/db-schema-update.js\"",
     "lint": "eslint --fix ."
   },
   "moduleResolution": "Node",
@@ -17,6 +19,7 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
+    "node-sass": "^7.0.1",
     "pug": "^3.0.2"
   },
   "devDependencies": {

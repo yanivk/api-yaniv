@@ -6,5 +6,5 @@ export interface ExperiencesInterface {
     location?: string
     startDate: Date
     endDate?: Date
-    isInProgress: boolean
+    isInProgress?: boolean
 }

@@ -6,7 +6,7 @@ export interface FormationsInterface {
     description: string
     location: string
     date: Date
-    degree: string
+    degree?: string
     institute: string
     skills: SkillsInterface[]
 }

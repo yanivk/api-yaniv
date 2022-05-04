@@ -7,8 +7,8 @@ export interface ProjectsInterface {
     name: string
     description: string
     created_at: Date
-    image: string
+    image?: string
     user: UsersInterface
     skills: SkillsInterface[]
-    experiences?: ExperiencesInterface
+    experiences?: ExperiencesInterface[]
 }

@@ -3,13 +3,14 @@ import * as express from 'express';
 import * as dotenv from 'dotenv'
 import jwt, {Secret} from 'jsonwebtoken';
 import projects from "../models/projects";
+import {MysqlError} from "mysql";
 
 const router = express.Router();
 // get config vars
 dotenv.config();
 
 
-const project = new projects('project')
+const project = new projects("project")
 
 function authenticateToken(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization']
@@ -31,15 +32,15 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
  * Routes to projects
  */
 router.get('/', authenticateToken, async function (req, res, next) {
-    await project.findAll(1, function (err: Object, result: Object) {
-        if (err) throw err;
+    await project.findAll(1, (err: MysqlError | null, result: Object) => {
+        if (err) throw err?.sqlMessage;
         res.send(result)
     }).then(r => console.log(r));
 })
 router.post('/add', authenticateToken, async function (req, res, next) {
     const body = req.body
     if (body.name && body.description && body.image) {
-        await project.create(body, function (err: string, result: object) {
+        await project.create(body, (err: MysqlError | null, result: Object) => {
             if (err) throw res.json(err);
             res.status(200)
             res.send(result)
@@ -47,7 +48,7 @@ router.post('/add', authenticateToken, async function (req, res, next) {
     }
 })
 router.get('/:id', authenticateToken, function (req, res,next){
-    project.find(parseInt(req.params.id), 1, function (err: Object, result: Object) {
+    project.find(parseInt(req.params.id), 1, (err: MysqlError | null, result: Object) => {
         if (err) throw err;
         return res.send(result)
     }).then(r => console.log(r));
