@@ -13,7 +13,7 @@ class DbSchemaUpdate {
         this._db = new DataBase(config.db);
     }
     public schemaUpdate (table: string) {
-        this._db.query(`CREATE TABLE IF NOT EXISTS ${table} (id int, PRIMARY KEY (id))`, [], (err: MysqlError | null, result: Object) =>  {
+        this._db.query(`CREATE TABLE IF NOT EXISTS ${table} (id int NOT NULL AUTO_INCREMENT, PRIMARY KEY (id))`, [], (err: MysqlError | null, result: Object) =>  {
             if (err) throw err;
         }).catch((r) => console.log(r, 'background: #E94F37; color: #393E41'))
     }

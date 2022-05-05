@@ -10,7 +10,7 @@ const router = express.Router();
 dotenv.config();
 
 
-const project = new projects("project")
+const project = new projects("projects")
 
 function authenticateToken(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization']

@@ -10,14 +10,14 @@ export default class Projects extends ModelsClass {
 
     create(project: ProjectsInterface, param?: queryCallback) {
         return this._db.query(
-            'INSERT INTO project (name, description, created_at, image) VALUES (?,?,?,?)',
+            'INSERT INTO projects (name, description, created_at, image) VALUES (?,?,?,?)',
             [project.name, project.description, helper.formatDate(new Date()), project.image],
             param
         );
     }
 
     update(project: ProjectsInterface, id: number, param?: queryCallback) {
-        let query = 'UPDATE project SET '
+        let query = 'UPDATE projects SET '
         let parameters: any[] = []
         Object.keys(project).forEach((value, index, array) => {
             if (array.length - 1 === index){
