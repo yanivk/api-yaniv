@@ -28,19 +28,19 @@ const user = new Users()
 router.get('/login', async function (req: Request, res: Response) {
     const body = req.body;
     const userFound: Query = await user.findByMail(body.mail, async (err: MysqlError | null, rows: [UsersInterface]) => {
-        if (err) throw await res.send(err);
+        if (err) throw res.send(err);
         console.log(userFound)
         if (rows.length > 0) {
             const validPassword = await bcrypt.compare(body.password, rows[0].password);
 
             if (validPassword) {
                 let newToken = generateAccessToken({mail: rows[0].mail}, {password: rows[0].password});
-                await res.status(200).json({message: "Valid password", token: newToken});
+                res.status(200).json({message: "Valid password", token: newToken});
             } else {
-                await res.status(400).json({error: "Invalid Password"});
+                res.status(400).json({error: "Invalid Password"});
             }
         } else {
-            await res.status(401).json({error: "User does not exist"});
+            res.status(401).json({error: "User does not exist"});
         }
     });
 

@@ -12,12 +12,4 @@ router.get('/', function(_req: Request, res: Response, next) {
     }
 });
 
-router.get('/', function(_req: Request, res: Response, next) {
-    try {
-        return res.send('coucou')
-    } catch (err) {
-        next(err);
-    }
-});
-
 export default router

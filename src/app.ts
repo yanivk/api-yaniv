@@ -4,11 +4,9 @@ import express from 'express';
 import * as path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import indexRouter from './api';
-import usersRouter from './api/users';
-import projectsRouter from './api/projects';
 import * as http from "http";
 import {Express} from "express/ts4.0";
+import router from "./api/router";
 
 const app: Express = express();
 
@@ -21,9 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/projects', projectsRouter);
+app.use(router);
 
 // catch 404 and forward to error handler
 app.use(function(_req, _res, next) {

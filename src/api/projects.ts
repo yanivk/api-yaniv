@@ -47,6 +47,17 @@ router.post('/add', authenticateToken, async function (req, res) {
         });
     }
 })
+router.patch('/:id', authenticateToken, async function (req, res) {
+    const body = req.body
+    console.log(body)
+    if (body.name || body.description || body.image) {
+        await project.update(body, parseInt(req.params.id), (err: MysqlError | null, result: Object) => {
+            if (err) throw res.json(err?.sqlMessage);
+            res.status(200)
+            res.send(result)
+        });
+    }
+})
 router.get('/:id', async function (req, res){
     await project.find(parseInt(req.params.id), 1, (err: MysqlError | null, result: Object) => {
         if (err) throw res.json(err?.sqlMessage);
