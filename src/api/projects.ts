@@ -40,21 +40,18 @@ router.get('/', async function (_req, res) {
 router.post('/add', authenticateToken, async function (req, res) {
     const body = req.body
     if (body.name && body.description && body.image) {
-        await project.create(body, (err: MysqlError | null, result: Object) => {
+        await project.create(body, (err: MysqlError | null) => {
             if (err) throw res.json(err?.sqlMessage);
-            res.status(200)
-            res.send(result)
+            res.status(200).send({message: 'The project has been add', code: 200})
         });
     }
 })
 router.patch('/:id', authenticateToken, async function (req, res) {
     const body = req.body
-    console.log(body)
     if (body.name || body.description || body.image) {
-        await project.update(body, parseInt(req.params.id), (err: MysqlError | null, result: Object) => {
+        await project.update(body, parseInt(req.params.id), (err: MysqlError | null) => {
             if (err) throw res.json(err?.sqlMessage);
-            res.status(200)
-            res.send(result)
+            res.status(200).send({message: 'The project has been update', code: 200})
         });
     }
 })
@@ -65,9 +62,9 @@ router.get('/:id', async function (req, res){
     })
 })
 router.delete('/:id', authenticateToken, async function (req, res){
-    await project.remove(parseInt(req.params.id), (err: MysqlError | null, result: Object) => {
+    await project.remove(parseInt(req.params.id), (err: MysqlError | null) => {
         if (err) throw res.json(err?.sqlMessage);
-        res.send(result)
+        res.status(200).send({message: 'The project has been delete', code: 200})
     })
 })
 
