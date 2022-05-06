@@ -15,4 +15,12 @@ export default class Projects extends ModelsClass {
             param
         );
     }
+
+    updateExperienceProject(experienceId: number, projectId:number, param?: queryCallback) {
+        return this._db.query(
+            'UPDATE projects SET experiences = ? WHERE id = ?',
+            [experienceId, projectId],
+            param
+        )
+    }
 }

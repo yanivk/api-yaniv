@@ -1,10 +1,12 @@
 import * as express from 'express';
 import * as dotenv from 'dotenv'
-import projects from "../models/projects";
-import users from "../models/users"
+import Projects from "../models/projects";
+import Users from "../models/users"
 import {MysqlError} from "mysql";
 import helpers from '../services/helpers';
 import {UsersInterface} from "../interfaces/models/usersInterface";
+import Experiences from "../models/experiences";
+import {ExperiencesInterface} from "../interfaces/models/experiencesInterface";
 
 const router = express.Router();
 // get config vars
@@ -17,8 +19,9 @@ type JWTResponse = {
     exp: number
 
 }
-const project = new projects("projects")
-const user = new users("users")
+const project = new Projects("projects")
+const user = new Users("users")
+const experience = new Experiences("experiences")
 /**
  * Routes to projects
  */
@@ -38,8 +41,13 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
             await user.findByMail(userInformation.mail,async (err: MysqlError | null, result: UsersInterface[]) => {
                 if (err) throw res.json(err?.sqlMessage);
                 body.user = result[0].id
-                await project.create(body, (err1: MysqlError | null) => {
+                await project.create(body, (err1: MysqlError | null, results) => {
                     if (err1) throw res.json(err1?.sqlMessage);
+                    if (body.experiences.id) {
+                        project.updateExperienceProject(body.experiences.id, results.insertId)
+                    } else {
+                        experience.create(body.experiences)
+                    }
                     res.status(200).send({message: 'The project has been add', code: 200})
                 });
             })
