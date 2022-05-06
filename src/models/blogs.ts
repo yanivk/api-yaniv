@@ -41,6 +41,14 @@ export default class Blogs extends ModelsClass {
         }
     }
 
+    setBlogCategoryExist(oldsValues: {blogId: number, categoryId: number}, updateValues: {blogId: number, categoryId: number},  param?: queryCallback) {
+        return this._db.query(
+            'UPDATE blogs_categories SET blog_id = ?, category_id = ? WHERE blog_id = ? AND category_id = ?',
+            [updateValues.blogId, updateValues.categoryId, oldsValues.blogId, oldsValues.categoryId],
+            param
+        )
+    }
+
     private async setBlogCategory(blogId: number, categoryId: number) {
         await this._db.query(
             'INSERT INTO blogs_categories (blog_id, category_id) VALUES (?,?)',

@@ -40,6 +40,7 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
                 body.user = result[0].id
                 await blog.create(body, (err1: MysqlError | null, results) => {
                     if (err1) throw res.json(err1?.sqlMessage);
+                    // Check if content of categories in body is with name or description, or if category exist and push with id
                     if (body.categories.name || body.categories.description) {
                         blog.categoriesCreation(body, results.insertId)
                     } else {
@@ -54,6 +55,25 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
     }
 
 })
+
+router.post('/:bid/categories/:cid', helpers.authenticateToken, async function (req, res) {
+    const body = req.body
+    console.log(body)
+    if (body.blog_id && body.category_id) {
+        console.log('cc')
+        await blog.setBlogCategoryExist({
+            blogId: parseInt(req.params.bid),
+            categoryId: parseInt(req.params.cid)
+        }, {
+            blogId: body.blog_id,
+            categoryId: body.category_id
+        }, (err: MysqlError | null) => {
+            if (err) throw res.json(err?.sqlMessage)
+            res.status(200).send({message: 'The blog category has been update'})
+        })
+    }
+})
+
 router.patch('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
     if (body.name || body.image) {
@@ -63,6 +83,7 @@ router.patch('/:id', helpers.authenticateToken, async function (req, res) {
         });
     }
 })
+
 router.get('/:id', async function (req, res){
     await blog.find(parseInt(req.params.id), 1, (err: MysqlError | null, result: Object) => {
         if (err) throw res.json(err?.sqlMessage);
