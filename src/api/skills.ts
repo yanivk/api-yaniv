@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as dotenv from 'dotenv'
 import {MysqlError} from "mysql";
 import helpers from '../services/helpers';
-import skills from '../models/skills';
+import Skills from '../models/skills';
 
 const router = express.Router();
 // get config vars
@@ -15,7 +15,7 @@ type JWTResponse = {
     exp: number
 
 }
-const skill = new skills("skills")
+const skill = new Skills("skills")
 /**
  * Routes to Skills
  */
