@@ -58,9 +58,7 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
 
 router.post('/:bid/categories/:cid', helpers.authenticateToken, async function (req, res) {
     const body = req.body
-    console.log(body)
     if (body.blog_id && body.category_id) {
-        console.log('cc')
         await blog.setBlogCategoryExist({
             blogId: parseInt(req.params.bid),
             categoryId: parseInt(req.params.cid)

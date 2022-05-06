@@ -38,8 +38,14 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
             await user.findByMail(userInformation.mail,async (err: MysqlError | null, result: UsersInterface[]) => {
                 if (err) throw res.json(err?.sqlMessage);
                 body.user = result[0].id
-                await formation.create(body, (err1: MysqlError | null) => {
+                await formation.create(body, (err1: MysqlError | null, results) => {
                     if (err1) throw res.json(err1?.sqlMessage);
+                    console.log(body.skills, results.insertId)
+                    if (body.skills[0].name || body.skills[0].image) {
+                        formation.skillsCreation(body, results.insertId)
+                    } else {
+                        formation.skillsCreation(body, results.insertId, true)
+                    }
                     res.status(200).send({message: 'The formation has been add', code: 200})
                 });
             })
@@ -47,6 +53,23 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
 
     }
 })
+
+router.post('/:fid/skills/:sid', helpers.authenticateToken, async function (req, res) {
+    const body = req.body
+    if (body.formation_id && body.skill_id) {
+        await formation.setFormationSkillsExist({
+            formationId: parseInt(req.params.bid),
+            skillId: parseInt(req.params.cid)
+        }, {
+            formationId: body.formation_id,
+            skillId: body.skill_id
+        }, (err: MysqlError | null) => {
+            if (err) throw res.json(err?.sqlMessage)
+            res.status(200).send({message: 'The formation skill has been update'})
+        })
+    }
+})
+
 router.patch('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
     if (body.name || body.description || body.image) {
