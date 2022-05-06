@@ -8,9 +8,10 @@ export default class Formations extends ModelsClass {
     }
 
     create(formation: FormationsInterface, param?: queryCallback) {
+        console.log('coucou')
         return this._db.query(
-            'INSERT INTO formations (name, description, location, date, degree, institute) VALUES (?,?,?,?,?,?)',
-            [formation.name, formation.description, formation.location, formation.date, formation.degree, formation.institute],
+            'INSERT INTO formations (name, description, location, date, degree, institute, users) VALUES (?,?,?,?,?,?,?)',
+            [formation.name, formation.description, formation.location, new Date(formation.date), formation.degree, formation.institute, formation.user],
             param
         );
     }

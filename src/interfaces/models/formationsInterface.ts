@@ -9,4 +9,5 @@ export interface FormationsInterface {
     degree?: string
     institute: string
     skills: SkillsInterface[]
+    user: number
 }
