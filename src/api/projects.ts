@@ -1,33 +1,24 @@
-import { NextFunction, Request, Response } from 'express'
 import * as express from 'express';
 import * as dotenv from 'dotenv'
-import jwt, {Secret} from 'jsonwebtoken';
 import projects from "../models/projects";
+import users from "../models/users"
 import {MysqlError} from "mysql";
+import helpers from '../services/helpers';
+import {UsersInterface} from "../interfaces/models/usersInterface";
 
 const router = express.Router();
 // get config vars
 dotenv.config();
 
+type JWTResponse = {
+    mail: string
+    password: string
+    iat: number
+    exp: number
 
-const project = new projects("projects")
-
-function authenticateToken(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-
-    if (token == null) return res.sendStatus(401)
-
-    if (typeof process.env.SECRET_TOKEN === 'string') {
-        let secretToken: Secret = process.env.SECRET_TOKEN
-
-        jwt.verify(token, secretToken , (err) => {
-            if (err) return res.status(403).json('Your token is not good')
-            next()
-        })
-    }
 }
-
+const project = new projects("projects")
+const user = new users("users")
 /**
  * Routes to projects
  */
@@ -37,16 +28,26 @@ router.get('/', async function (_req, res) {
         res.send(result)
     })
 })
-router.post('/add', authenticateToken, async function (req, res) {
-    const body = req.body
+router.post('/add', helpers.authenticateToken, async function (req, res, next) {
+    let body = req.body
+
+    const userInformation: JWTResponse | null = helpers.getUserInformationFromToken(req, res, next)
+
     if (body.name && body.description && body.image) {
-        await project.create(body, (err: MysqlError | null) => {
-            if (err) throw res.json(err?.sqlMessage);
-            res.status(200).send({message: 'The project has been add', code: 200})
-        });
+        if (typeof userInformation?.mail === 'string') {
+            await user.findByMail(userInformation.mail,async (err: MysqlError | null, result: UsersInterface[]) => {
+                if (err) throw res.json(err?.sqlMessage);
+                body.user = result[0].id
+                await project.create(body, (err1: MysqlError | null) => {
+                    if (err1) throw res.json(err1?.sqlMessage);
+                    res.status(200).send({message: 'The project has been add', code: 200})
+                });
+            })
+        }
+
     }
 })
-router.patch('/:id', authenticateToken, async function (req, res) {
+router.patch('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
     if (body.name || body.description || body.image) {
         await project.update(body, parseInt(req.params.id), (err: MysqlError | null) => {
@@ -61,7 +62,7 @@ router.get('/:id', async function (req, res){
         res.send(result)
     })
 })
-router.delete('/:id', authenticateToken, async function (req, res){
+router.delete('/:id', helpers.authenticateToken, async function (req, res){
     await project.remove(parseInt(req.params.id), (err: MysqlError | null) => {
         if (err) throw res.json(err?.sqlMessage);
         res.status(200).send({message: 'The project has been delete', code: 200})

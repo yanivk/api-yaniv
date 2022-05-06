@@ -3,6 +3,7 @@ import {Query, queryCallback} from "mysql";
 import DataBase from "../services/DataBase";
 import config from '../config';
 import helper from "../services/helpers";
+import {BlogsInterface} from "../interfaces/models/blogsInterface";
 
 export default class ModelsClass implements DatabaseInterface {
     readonly _db: DataBase;
@@ -25,5 +26,25 @@ export default class ModelsClass implements DatabaseInterface {
 
     remove(id: number, params?: queryCallback): Promise<Query> {
         return this._db.query('DELETE FROM ' + this.table + ' WHERE id = ?', [id], params)
+    }
+
+    update(objectValue: object, id: number, param?: queryCallback) {
+        let query = 'UPDATE '+ this.table + ' SET '
+        let parameters: any[] = []
+        Object.keys(objectValue).forEach((value, index, array) => {
+            if (array.length - 1 === index){
+                query += `${value} = ? `
+            } else {
+                query += `${value} = ?,`
+            }
+            // @ts-ignore
+            parameters = [...parameters, objectValue[value]]
+        })
+        query += 'WHERE id = ?'
+        return this._db.query(
+            query,
+            [...parameters, id],
+            param
+        );
     }
 }

@@ -6,5 +6,5 @@ export interface BlogsInterface {
     content: string
     slug: string
     image?: string
-    categories: CategoriesInterface[]
+    categories?: CategoriesInterface[]
 }

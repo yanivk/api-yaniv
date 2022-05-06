@@ -14,7 +14,7 @@ export default class DataBase {
         this._configuration = configuration;
     }
 
-    async query(sql: string, params?: (string | number | undefined)[], result?: queryCallback) {
+    async query(sql: string, params?: (string | number | Date | boolean | undefined)[], result?: queryCallback) {
         const connection = mysql.createConnection(this._configuration);
         return connection.query(sql, params, result);
     }
