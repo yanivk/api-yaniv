@@ -46,7 +46,10 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
                     if (body.experiences.id) {
                         project.updateExperienceProject(body.experiences.id, results.insertId)
                     } else {
-                        experience.create(body.experiences)
+                        experience.create(body.experiences, ((err2: MysqlError | null, results1) => {
+                            if (err2) throw res.json(err2?.sqlMessage);
+                            project.updateExperienceProject(results1.insertId, results.insertId)
+                        }))
                     }
                     res.status(200).send({message: 'The project has been add', code: 200})
                 });

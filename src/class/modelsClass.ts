@@ -3,7 +3,6 @@ import {Query, queryCallback} from "mysql";
 import DataBase from "../services/DataBase";
 import config from '../config';
 import helper from "../services/helpers";
-import {BlogsInterface} from "../interfaces/models/blogsInterface";
 
 export default class ModelsClass implements DatabaseInterface {
     readonly _db: DataBase;
@@ -28,6 +27,10 @@ export default class ModelsClass implements DatabaseInterface {
         return this._db.query('DELETE FROM ' + this.table + ' WHERE id = ?', [id], params)
     }
 
+    /**
+     * This function can be updating a simple entity with no complex database relationship (One To One | One To Many)
+     * If you have a complex relation (Many To Many) you should rewrite a function more specific in a model of object
+     */
     update(objectValue: object, id: number, param?: queryCallback) {
         let query = 'UPDATE '+ this.table + ' SET '
         let parameters: any[] = []
@@ -41,6 +44,7 @@ export default class ModelsClass implements DatabaseInterface {
             parameters = [...parameters, objectValue[value]]
         })
         query += 'WHERE id = ?'
+        console.log(parameters)
         return this._db.query(
             query,
             [...parameters, id],
