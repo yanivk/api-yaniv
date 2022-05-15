@@ -27,7 +27,14 @@ router.get('/', async function (_req, res) {
 })
 router.post('/add', helpers.authenticateToken, async function (req, res, next) {
     let body = req.body
-
+    const file = req.files
+    if (file){
+        let imageFiles = file.image
+        if ("mv" in imageFiles) {
+            await imageFiles.mv('./public/uploads/' + imageFiles.name);
+            body.image = imageFiles.name
+        }
+    }
     await skill.create(body, (err1: MysqlError | null) => {
         if (err1) throw res.json(err1?.sqlMessage);
         res.status(200).send({message: 'The skill has been add', code: 200})
@@ -36,7 +43,16 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
 })
 router.patch('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
+    const file = req.files
+    if (file){
+        let imageFiles = file.image
+        if ("mv" in imageFiles) {
+            await imageFiles.mv('./public/uploads/skills/' + imageFiles.name);
+            body.image = imageFiles.name
+        }
+    }
     if (body.name || body.image) {
+
         await skill.update(body, parseInt(req.params.id), (err: MysqlError | null) => {
             if (err) throw res.json(err?.sqlMessage);
             res.status(200).send({message: 'The skill has been update', code: 200})

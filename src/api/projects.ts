@@ -36,6 +36,15 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
 
     const userInformation: JWTResponse | null = helpers.getUserInformationFromToken(req, res, next)
 
+    const file = req.files
+    if (file){
+        let imageFiles = file.image
+        if ("mv" in imageFiles) {
+            await imageFiles.mv('./public/uploads/projects/' + imageFiles.name);
+            body.image = imageFiles.name
+        }
+    }
+
     if (body.name && body.description && body.image) {
         if (typeof userInformation?.mail === 'string') {
             await user.findByMail(userInformation.mail,async (err: MysqlError | null, result: UsersInterface[]) => {
@@ -66,6 +75,16 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
 
 router.post('/:pid/skills/:sid', helpers.authenticateToken, async function (req, res) {
     const body = req.body
+
+    const file = req.files
+    if (file){
+        let imageFiles = file.image
+        if ("mv" in imageFiles) {
+            await imageFiles.mv('./public/uploads/projects/' + imageFiles.name);
+            body.image = imageFiles.name
+        }
+    }
+
     if (body.project_id && body.skill_id) {
         await project.setFormationSkillsExist({
             projectId: parseInt(req.params.bid),
@@ -82,6 +101,14 @@ router.post('/:pid/skills/:sid', helpers.authenticateToken, async function (req,
 
 router.patch('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
+    const file = req.files
+    if (file){
+        let imageFiles = file.image
+        if ("mv" in imageFiles) {
+            await imageFiles.mv('./public/uploads/projects/' + imageFiles.name);
+            body.image = imageFiles.name
+        }
+    }
     if (body.name || body.description || body.image) {
         await project.update(body, parseInt(req.params.id), (err: MysqlError | null) => {
             if (err) throw res.json(err?.sqlMessage);
