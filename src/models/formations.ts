@@ -40,7 +40,7 @@ export default class Formations extends ModelsClass {
 
     setFormationSkillsExist(oldsValues: {formationId: number, skillId: number}, updateValues: {formationId: number, skillId: number},  param?: queryCallback) {
         return this._db.query(
-            'UPDATE blogs_categories SET blog_id = ?, category_id = ? WHERE blog_id = ? AND category_id = ?',
+            'UPDATE skills_formations SET formations_id = ?, skills_id = ? WHERE formations_id = ? AND skills_id = ?',
             [updateValues.formationId, updateValues.skillId, oldsValues.formationId, oldsValues.skillId],
             param
         )

@@ -4,12 +4,19 @@ import express from 'express';
 import * as path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import * as http from "http";
+import * as https from "https";
 import {Express} from "express/ts4.0";
 import router from "./api/router";
+import cors from "cors";
+import fs from "fs";
+import fileUpload from "express-fileupload";
 
 const app: Express = express();
 
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 const port = process.env.PORT || '3000';
 app.set('port', port);
 
@@ -18,6 +25,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(fileUpload({
+  createParentPath: true
+}))
+app.use(cors({
+  origin: "*"
+}))
 
 app.use(router);
 
@@ -42,7 +55,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res) => {
 // error handler
 app.use(errorHandler) ;
 
-const server = http.createServer(app);
+const server = https.createServer(options, app);
 server.listen(port);
 
 export default app

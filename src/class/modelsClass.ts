@@ -44,7 +44,6 @@ export default class ModelsClass implements DatabaseInterface {
             parameters = [...parameters, objectValue[value]]
         })
         query += 'WHERE id = ?'
-        console.log(parameters)
         return this._db.query(
             query,
             [...parameters, id],

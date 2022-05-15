@@ -40,7 +40,6 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
                 body.user = result[0].id
                 await formation.create(body, (err1: MysqlError | null, results) => {
                     if (err1) throw res.json(err1?.sqlMessage);
-                    console.log(body.skills, results.insertId)
                     if (body.skills[0].name || body.skills[0].image) {
                         formation.skillsCreation(body, results.insertId)
                     } else {

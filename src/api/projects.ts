@@ -51,6 +51,11 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
                             project.updateExperienceProject(results1.insertId, results.insertId)
                         }))
                     }
+                    if (body.skills && (body.skills[0].name || body.skills[0].image)) {
+                        project.skillsCreation(body, results.insertId)
+                    } else {
+                        project.skillsCreation(body, results.insertId, true)
+                    }
                     res.status(200).send({message: 'The project has been add', code: 200})
                 });
             })
@@ -58,6 +63,23 @@ router.post('/add', helpers.authenticateToken, async function (req, res, next) {
 
     }
 })
+
+router.post('/:pid/skills/:sid', helpers.authenticateToken, async function (req, res) {
+    const body = req.body
+    if (body.project_id && body.skill_id) {
+        await project.setFormationSkillsExist({
+            projectId: parseInt(req.params.bid),
+            skillId: parseInt(req.params.cid)
+        }, {
+            projectId: body.formation_id,
+            skillId: body.skill_id
+        }, (err: MysqlError | null) => {
+            if (err) throw res.json(err?.sqlMessage)
+            res.status(200).send({message: 'The project skill has been update'})
+        })
+    }
+})
+
 router.patch('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
     if (body.name || body.description || body.image) {
