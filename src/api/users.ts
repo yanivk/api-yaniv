@@ -5,7 +5,7 @@ import jwt, {Secret} from 'jsonwebtoken';
 import * as dotenv from 'dotenv'
 import bcrypt from "bcrypt";
 import { UsersInterface } from "../interfaces/models/usersInterface";
-import {MysqlError, Query} from "mysql";
+import {MysqlError} from "mysql";
 
 const router = express.Router();
 dotenv.config();

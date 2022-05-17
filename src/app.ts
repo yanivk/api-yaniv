@@ -1,23 +1,17 @@
 import createError from 'http-errors';
 import type { ErrorRequestHandler } from "express";
 import express from 'express';
-import * as path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import * as https from "https";
 import {Express} from "express/ts4.0";
 import router from "./api/router";
 import cors from "cors";
-import fs from "fs";
 import fileUpload from "express-fileupload";
+import * as http from "http";
 
 const app: Express = express();
 
-const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
-const port = process.env.PORT || '3000';
+const port = process.env.PORT || '80';
 app.set('port', port);
 
 app.use(logger('dev'));
@@ -31,7 +25,7 @@ app.use(fileUpload({
 app.use(cors({
   origin: "*"
 }))
-
+app.enable('trust proxy');
 app.use(router);
 
 // catch 404 and forward to error handler
@@ -55,7 +49,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res) => {
 // error handler
 app.use(errorHandler) ;
 
-const server = https.createServer(options, app);
+const server = http.createServer(app);
 server.listen(port);
 
 export default app

@@ -1,0 +1,17 @@
+runtime: nodejs16
+
+manual_scaling:
+  instances: 1
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
+beta_settings:
+  cloud_sql_instances: test
+env_variables:
+  SECRET_TOKEN: test
+  DB_HOST: localhost
+  DB_USER: root
+  DB_PASSWORD: root
+  DB_DATABASE: express
+  DB_INSTANCE_CONNECTION_NAME: test

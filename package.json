@@ -2,11 +2,17 @@
   "name": "api-yaniv",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
-    "start": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon dist/app.js\"",
+    "serve:dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon dist/app.js\"",
     "create-db": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc\" \"node dist/bin/create-database.js\"",
     "update-schema-db": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc\" \"node dist/bin/db-schema-update.js\"",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "start": "node dist/app.js",
+    "gcp-build": "tsc",
+    "create-app-yaml": "node create-app-yaml.js"
   },
   "moduleResolution": "Node",
   "dependencies": {
