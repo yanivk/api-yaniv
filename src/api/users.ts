@@ -21,7 +21,7 @@ function generateAccessToken(mail: Email, password: Password) {
 
 const user = new Users("users")
 
-router.get('/login', async function (req: Request, res: Response) {
+router.post('/login', async function (req: Request, res: Response) {
     const body = req.body;
     await user.findByMail(body.mail, async (err: MysqlError | null, rows: [UsersInterface]) => {
         if (err) throw res.send(err);
