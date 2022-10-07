@@ -10,7 +10,7 @@
     "create-db": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc\" \"node dist/bin/create-database.js\"",
     "update-schema-db": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc\" \"node dist/bin/db-schema-update.js\"",
     "lint": "eslint --fix .",
-    "start": " node dist/app.js",
+    "start": "npm run build && node dist/app.js",
     "build": "tsc"
   },
   "moduleResolution": "Node",
