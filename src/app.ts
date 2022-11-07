@@ -8,10 +8,16 @@ import router from "./api/router";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 import * as http from "http";
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData
+} from "./interfaces/socket.io"
 
 const app: Express = express();
-
-const port = process.env.PORT || '80';
+console.log(process.env.PORT)
+const port = process.env.PORT || '3000';
 app.set('port', port);
 
 app.use(logger('dev'));
@@ -50,7 +56,26 @@ const errorHandler: ErrorRequestHandler = (err, req, res) => {
 app.use(errorHandler) ;
 
 const server = http.createServer(app);
-server.listen(port);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:8080",
+    methods: ["GET", "POST"]
+  }});
+
+io.on('connection', (socket: any) => {
+  console.log('user connected')
+  socket.on('writeInColumn', ({column, player}) => {
+    io.emit('writeInColumn', {column, player})
+    console.log({column, player})
+  })
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+})
+server.listen(port, () => {
+  console.log('A server listen on port ' + port)
+});
 
 export default app
 

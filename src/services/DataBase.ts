@@ -22,6 +22,7 @@ export default class DataBase {
             this._configuration.socketPath = undefined
         }
         const connection = mysql.createConnection(this._configuration);
+
         return connection.query(sql, params, result);
     }
 }
