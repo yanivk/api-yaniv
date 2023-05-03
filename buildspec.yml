@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+    commands:
+      - npm install -g yarn typescript
+      - yarn install
+  build:
+    commands:
+      - yarn build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - yarn.lock
+    - package.json
+    - package-lock.json
+    - 'dist/**/*'
+    - node_modules/**/*
