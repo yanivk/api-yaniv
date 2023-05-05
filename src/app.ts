@@ -8,15 +8,19 @@ import router from "./api/router";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 import * as http from "http";
+
 import {
   ClientToServerEvents,
   ServerToClientEvents,
   InterServerEvents,
   SocketData
 } from "./interfaces/socket.io"
+// establish database connection
+
 
 const app: Express = express();
-console.log(process.env.PORT)
+
+
 const port = process.env.PORT || '3000';
 app.set('port', port);
 
@@ -32,7 +36,7 @@ app.use(cors({
   origin: "*"
 }))
 app.enable('trust proxy');
-app.use(router);
+app.use('/api', router);
 
 // catch 404 and forward to error handler
 app.use(function(_req, _res, next) {

@@ -1,12 +1,11 @@
 import { Request, Response } from 'express'
 import * as express from 'express';
-import Users from '../models/users'
 import jwt, {Secret} from 'jsonwebtoken';
 import * as dotenv from 'dotenv'
 import bcrypt from "bcrypt";
-import { UsersInterface } from "../interfaces/models/usersInterface";
-import {MysqlError} from "mysql";
-
+import myDataSource from "../services/app-data-source";
+import {User} from "../entity/user.entity";
+const userRepository = myDataSource.getRepository(User)
 const router = express.Router();
 dotenv.config();
 type Email = string
@@ -19,42 +18,38 @@ function generateAccessToken(mail: Email, password: Password) {
     }
 }
 
-const user = new Users("users")
-
 router.post('/login', async function (req: Request, res: Response) {
     const body = req.body;
-    await user.findByMail(body.mail, async (err: MysqlError | null, rows: [UsersInterface]) => {
-        if (err) throw res.send(err);
-        if (rows.length > 0) {
-            const validPassword = await bcrypt.compare(body.password, rows[0].password);
+    const user = await userRepository.findOneBy({
+        mail: body.mail
+    })
 
-            if (validPassword) {
-                let newToken = generateAccessToken(rows[0].mail, rows[0].password);
-                res.status(200).json({message: "Valid password", token: newToken});
-            } else {
-                res.status(400).json({error: "Invalid Password"});
-            }
+    if (user) {
+        const validPassword = await bcrypt.compare(body.password, user.password);
+        if (validPassword) {
+            let newToken = generateAccessToken(user.mail, user.password);
+            return res.status(200).json({message: "Valid password", token: newToken});
         } else {
-            res.status(401).json({error: "User does not exist"});
+            return res.status(400).json({error: "Invalid Password"});
         }
-    });
+    }
+    return res.status(401).json({error: "User does not exist"});
 
 });
 
 router.post('/signup', async function (req, res) {
     const body = req.body
-    if (body.firstname && body.lastname && body.mail && body.password) {
+    if (body.firstName && body.lastName && body.mail && body.password) {
         body.token = generateAccessToken(body.mail, body.password);
         const salt = await bcrypt.genSalt(10);
         body.password = await bcrypt.hash(body.password, salt);
-        await user.create(body, (err: MysqlError | null, result: Object) =>  {
-            if (err) throw err?.sqlMessage;
-            res.status(200)
-            res.send(result)
-        });
+        let user = new User()
+        user = {...body}
+        await userRepository.save(user)
+        return res.status(200).send("work")
     } else {
         res.status(400);
-        res.send('One or more parameters is missing');
+        return res.send('One or more parameters is missing');
     }
 })
 
