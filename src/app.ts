@@ -65,6 +65,7 @@ const io = new Server(server, {
 
 io.on('connection', (socket: any) => {
   console.log('user connected')
+  // @ts-ignore
   socket.on('writeInColumn', ({column, player}) => {
     io.emit('writeInColumn', {column, player})
     console.log({column, player})
