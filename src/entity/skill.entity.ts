@@ -9,14 +9,16 @@ export class Skill {
   @Column()
   name: string
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   image: string
 
   @ManyToMany(() => Project)
-  @JoinTable()
+  @JoinTable({name: "skills_projects"})
   projects: Project[]
 
   @ManyToMany(() => Formation)
-  @JoinTable()
+  @JoinTable({name: "skills_formations"})
   formations: Formation[]
 }

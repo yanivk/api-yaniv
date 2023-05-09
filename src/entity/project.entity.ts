@@ -16,7 +16,9 @@ export class Project {
   @Column()
   createdAt: Date
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   image: string
 
   @ManyToOne(() => User, (user) => user.projects)

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from "typeorm"
 import {Blog} from "./blog.entity";
 import {Formation} from "./formation.entity";
 import {Project} from "./project.entity";
@@ -19,8 +19,13 @@ export class User {
   @Column()
   password: string
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   token: string
+
+  @CreateDateColumn()
+  created_at: Date
 
   @OneToMany(() => Blog, (blog) => blog.user)
   blogs: Blog[]

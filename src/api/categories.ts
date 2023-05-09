@@ -1,59 +1,42 @@
 import * as express from 'express';
-import * as dotenv from 'dotenv'
-import {MysqlError} from "mysql";
 import helpers from '../services/helpers';
-import Categories from "../models/categories";
+import myDataSource from "../services/app-data-source";
+import {Category} from "../entity/category.entity";
+const categoryRepository = myDataSource.getRepository(Category)
 
 const router = express.Router();
-// get config vars
-dotenv.config();
 
-type JWTResponse = {
-    mail: string
-    password: string
-    iat: number
-    exp: number
-
-}
-const category = new Categories("categories")
 /**
  * Routes to Categories
  */
 router.get('/', async function (_req, res) {
-    await category.findAll(1, (err: MysqlError | null, result: Object) => {
-        if (err) throw res.json(err?.sqlMessage);
-        res.send(result)
-    })
+    const categories = await categoryRepository.find();
+    res.send(categories)
 })
-router.post('/add', helpers.authenticateToken, async function (req, res, next) {
-    let body = req.body
-
-    await category.create(body, (err1: MysqlError | null) => {
-        if (err1) throw res.json(err1?.sqlMessage);
-        res.status(200).send({message: 'The category has been add', code: 200})
-    });
-
+router.post('/', helpers.authenticateToken, async function (req, res, next) {
+    const body = req.body
+    const category = categoryRepository.create(body)
+    const results = await categoryRepository.save(category)
+    return res.send(results)
 })
-router.patch('/:id', helpers.authenticateToken, async function (req, res) {
+router.put('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
     if (body.name || body.image) {
-        await category.update(body, parseInt(req.params.id), (err: MysqlError | null) => {
-            if (err) throw res.json(err?.sqlMessage);
-            res.status(200).send({message: 'The category has been update', code: 200})
-        });
+        const category = await categoryRepository.findOneBy({id: parseInt(req.params.id)})
+        if (category instanceof Category) {
+            await categoryRepository.merge(category, body)
+            const results = await categoryRepository.save(category)
+            res.send(results)
+        }
     }
 })
 router.get('/:id', async function (req, res){
-    await category.find(parseInt(req.params.id), 1, (err: MysqlError | null, result: Object) => {
-        if (err) throw res.json(err?.sqlMessage);
-        res.send(result)
-    })
+    const result = await categoryRepository.findOneBy({id: parseInt(req.params.id)})
+    res.send(result)
 })
 router.delete('/:id', helpers.authenticateToken, async function (req, res){
-    await category.remove(parseInt(req.params.id), (err: MysqlError | null) => {
-        if (err) throw res.json(err?.sqlMessage);
-        res.status(200).send({message: 'The category has been delete', code: 200})
-    })
+    const result = await categoryRepository.delete(parseInt(req.params.id))
+    res.send(result)
 })
 
 

@@ -22,6 +22,6 @@ export class Blog {
   user: User
 
   @ManyToMany(() => Category)
-  @JoinTable()
+  @JoinTable({name: "blogs_categories"})
   categories: Category[]
 }

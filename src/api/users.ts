@@ -13,7 +13,7 @@ type Email = string
 type Password = string
 function generateAccessToken(mail: Email, password: Password) {
     if (typeof process.env.SECRET_TOKEN === 'string') {
-        let secretToken: Secret = process.env.SECRET_TOKEN
+        const secretToken: Secret = process.env.SECRET_TOKEN
         return jwt.sign({mail, password}, secretToken, {expiresIn: '1800s'});
     }
 }
@@ -27,7 +27,7 @@ router.post('/login', async function (req: Request, res: Response) {
     if (user) {
         const validPassword = await bcrypt.compare(body.password, user.password);
         if (validPassword) {
-            let newToken = generateAccessToken(user.mail, user.password);
+            const newToken = generateAccessToken(user.mail, user.password);
             return res.status(200).json({message: "Valid password", token: newToken});
         } else {
             return res.status(400).json({error: "Invalid Password"});

@@ -23,7 +23,7 @@ export class Experience {
   @Column()
   endDate: Date
 
-  @Column()
+  @Column({ default: false })
   isInProgress: number
 
   @OneToMany(() => Project, (project) => project.experience)

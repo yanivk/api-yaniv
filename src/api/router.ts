@@ -5,6 +5,7 @@ import projectsRouter from "./projects";
 import skillsRouter from "./skills"
 import formationsRouter from "./formations"
 import blogsRouter from "./blogs"
+import categoriesRouter from "./categories";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/projects', projectsRouter);
 router.use('/skills', skillsRouter);
 router.use('/formations', formationsRouter)
 router.use('/blogs', blogsRouter)
+router.use('/categories', categoriesRouter)
 
 export default router

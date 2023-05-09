@@ -26,7 +26,6 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
-    "node-sass": "^7.0.1",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.5.3",
     "typeorm": "^0.3.15"
