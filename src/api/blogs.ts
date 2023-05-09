@@ -1,33 +1,28 @@
 import * as express from 'express';
-import * as dotenv from 'dotenv'
-import {MysqlError} from "mysql";
 import helpers from '../services/helpers';
-import Blogs from "../models/blogs";
 import {UsersInterface} from "../interfaces/models/usersInterface";
-import users from "../models/users";
+import myDataSource from "../services/app-data-source";
+import {Blog} from "../entity/blog.entity";
+const blogRepository = myDataSource.getRepository(Blog)
 
 const router = express.Router();
-// get config vars
-dotenv.config();
 
-type JWTResponse = {
-    mail: string
-    password: string
-    iat: number
-    exp: number
 
-}
-const blog = new Blogs("blogs")
-const user = new users("users")
 /**
  * Routes to Blogs
  */
 router.get('/', async function (_req, res) {
-    await blog.findAll(1, (err: MysqlError | null, result: Object) => {
-        if (err) throw res.json(err?.sqlMessage);
-        res.send(result)
-    })
+    const blogs = await blogRepository.find();
+    res.send(blogs)
 })
+
+router.post('/', helpers.authenticateToken, async function (req, res) {
+    const body = req.body
+    const category = blogRepository.create(body)
+    const results = await blogRepository.save(category)
+    return res.send(results)
+})
+/*
 router.post('/add', helpers.authenticateToken, async function (req, res, next) {
     let body = req.body
 
@@ -95,5 +90,5 @@ router.delete('/:id', helpers.authenticateToken, async function (req, res){
     })
 })
 
-
+*/
 export default router
