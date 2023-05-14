@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToOne} from "typeorm"
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn} from "typeorm"
 import {User} from "./user.entity";
 import {Experience} from "./experience.entity";
 
@@ -13,8 +13,8 @@ export class Project {
   @Column()
   description: string
 
-  @Column()
-  createdAt: Date
+  @CreateDateColumn()
+  created_at: Date
 
   @Column({
     nullable: true,

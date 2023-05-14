@@ -6,6 +6,7 @@ import skillsRouter from "./skills"
 import formationsRouter from "./formations"
 import blogsRouter from "./blogs"
 import categoriesRouter from "./categories";
+import experiencesRouter from "./experiences";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/skills', skillsRouter);
 router.use('/formations', formationsRouter)
 router.use('/blogs', blogsRouter)
 router.use('/categories', categoriesRouter)
+router.use('/experiences', experiencesRouter)
 
 export default router

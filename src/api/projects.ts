@@ -1,132 +1,49 @@
 import * as express from 'express';
-import * as dotenv from 'dotenv'
-import Projects from "../models/projects";
-import Users from "../models/users"
-import {MysqlError} from "mysql";
 import helpers from '../services/helpers';
-import {UsersInterface} from "../interfaces/models/usersInterface";
-import Experiences from "../models/experiences";
-import {ExperiencesInterface} from "../interfaces/models/experiencesInterface";
+import myDataSource from "../services/app-data-source";
+import {Project} from "../entity/project.entity";
+const projectRepository = myDataSource.getRepository(Project)
 
 const router = express.Router();
-// get config vars
-dotenv.config();
 
-type JWTResponse = {
-    mail: string
-    password: string
-    iat: number
-    exp: number
-
-}
-const project = new Projects("projects")
-const user = new Users("users")
-const experience = new Experiences("experiences")
 /**
  * Routes to projects
  */
 router.get('/', async function (_req, res) {
-    await project.findAll(1, (err: MysqlError | null, result: Object) => {
-        if (err) throw res.json(err?.sqlMessage);
-        res.send(result)
-    })
+    const projects = await projectRepository.find({
+        relations: ['experience']
+    });
+    res.send(projects)
 })
-router.post('/add', helpers.authenticateToken, async function (req, res, next) {
-    let body = req.body
-
-    const userInformation: JWTResponse | null = helpers.getUserInformationFromToken(req, res, next)
-
-    const file = req.files
-    if (file){
-        let imageFiles = file.image
-        if ("mv" in imageFiles) {
-            await imageFiles.mv('./public/uploads/projects/' + imageFiles.name);
-            body.image = imageFiles.name
-        }
-    }
-
-    if (body.name && body.description && body.image) {
-        if (typeof userInformation?.mail === 'string') {
-            await user.findByMail(userInformation.mail,async (err: MysqlError | null, result: UsersInterface[]) => {
-                if (err) throw res.json(err?.sqlMessage);
-                body.user = result[0].id
-                await project.create(body, (err1: MysqlError | null, results) => {
-                    if (err1) throw res.json(err1?.sqlMessage);
-                    if (body.experiences.id) {
-                        project.updateExperienceProject(body.experiences.id, results.insertId)
-                    } else {
-                        experience.create(body.experiences, ((err2: MysqlError | null, results1) => {
-                            if (err2) throw res.json(err2?.sqlMessage);
-                            project.updateExperienceProject(results1.insertId, results.insertId)
-                        }))
-                    }
-                    if (body.skills && (body.skills[0].name || body.skills[0].image)) {
-                        project.skillsCreation(body, results.insertId)
-                    } else {
-                        project.skillsCreation(body, results.insertId, true)
-                    }
-                    res.status(200).send({message: 'The project has been add', code: 200})
-                });
-            })
-        }
-
-    }
-})
-
-router.post('/:pid/skills/:sid', helpers.authenticateToken, async function (req, res) {
+router.post('/', helpers.authenticateToken, async function (req, res, next) {
     const body = req.body
-
-    const file = req.files
-    if (file){
-        let imageFiles = file.image
-        if ("mv" in imageFiles) {
-            await imageFiles.mv('./public/uploads/projects/' + imageFiles.name);
-            body.image = imageFiles.name
-        }
-    }
-
-    if (body.project_id && body.skill_id) {
-        await project.setFormationSkillsExist({
-            projectId: parseInt(req.params.bid),
-            skillId: parseInt(req.params.cid)
-        }, {
-            projectId: body.formation_id,
-            skillId: body.skill_id
-        }, (err: MysqlError | null) => {
-            if (err) throw res.json(err?.sqlMessage)
-            res.status(200).send({message: 'The project skill has been update'})
-        })
-    }
+    const project = projectRepository.create(body)
+    const results = await projectRepository.save(project)
+    return res.send(results)
 })
-
-router.patch('/:id', helpers.authenticateToken, async function (req, res) {
+router.put('/:id', helpers.authenticateToken, async function (req, res) {
     const body = req.body
-    const file = req.files
-    if (file){
-        let imageFiles = file.image
-        if ("mv" in imageFiles) {
-            await imageFiles.mv('./public/uploads/projects/' + imageFiles.name);
-            body.image = imageFiles.name
+    if (body.name || body.image) {
+        const project = await projectRepository.findOneBy({id: parseInt(req.params.id)})
+        if (project instanceof Project) {
+            await projectRepository.merge(project, body)
+            const results = await projectRepository.save(project)
+            res.send(results)
         }
-    }
-    if (body.name || body.description || body.image) {
-        await project.update(body, parseInt(req.params.id), (err: MysqlError | null) => {
-            if (err) throw res.json(err?.sqlMessage);
-            res.status(200).send({message: 'The project has been update', code: 200})
-        });
     }
 })
 router.get('/:id', async function (req, res){
-    await project.find(parseInt(req.params.id), 1, (err: MysqlError | null, result: Object) => {
-        if (err) throw res.json(err?.sqlMessage);
-        res.send(result)
-    })
+    const result = await projectRepository.findOne({
+    where: {
+        id: parseInt(req.params.id)
+    },
+    relations: ['experience']
+})
+    res.send(result)
 })
 router.delete('/:id', helpers.authenticateToken, async function (req, res){
-    await project.remove(parseInt(req.params.id), (err: MysqlError | null) => {
-        if (err) throw res.json(err?.sqlMessage);
-        res.status(200).send({message: 'The project has been delete', code: 200})
-    })
+    const result = await projectRepository.delete(parseInt(req.params.id))
+    res.send(result)
 })
 
 
