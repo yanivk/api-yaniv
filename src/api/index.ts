@@ -14,7 +14,7 @@ router.get('/', function(_req: Request, res: Response, next) {
 
 /*Health route*/
 router.get('/health-check', function (req, res) {
-  retunr res.send('Health check good');
+  return res.send('Health check good');
 });
 
 export default router
