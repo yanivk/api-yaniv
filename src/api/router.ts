@@ -19,4 +19,9 @@ router.use('/blogs', blogsRouter)
 router.use('/categories', categoriesRouter)
 router.use('/experiences', experiencesRouter)
 
+
+/*Health route*/
+router.get('health-check', (req, res) => {
+  res.send("Health check it's good");
+});
 export default router
